@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Save } from "lucide-react";
+import { useUserInfo } from "@/contexts/UserInfoContext";
 
 type Step = "intro" | "analyze";
 
@@ -18,6 +19,7 @@ interface Disease {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { setUserInfo } = useUserInfo();
   
   // Step management
   const [step, setStep] = useState<Step>("intro");
@@ -167,6 +169,15 @@ const Index = () => {
       toast.error("모든 건강 정보를 입력해주세요.");
       return;
     }
+    
+    // Save user info to context (memory only, no persistence)
+    setUserInfo({
+      age: parseInt(age),
+      gender: gender as "male" | "female",
+      height: parseFloat(height),
+      weight: parseFloat(weight),
+    });
+    
     setStep("analyze");
   };
 
