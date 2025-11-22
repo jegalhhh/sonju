@@ -49,3 +49,8 @@ export const DISEASES: Disease[] = [
     concerns: "퓨린 함량이 높으면 위험",
   },
 ];
+
+// O(1) 조회를 위한 Map 객체
+export const DISEASES_MAP = new Map<string, Disease>(
+  DISEASES.map(disease => [disease.id, disease])
+);
