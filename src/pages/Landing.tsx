@@ -37,9 +37,9 @@ const Landing = () => {
 
         {/* 오른쪽: 패드 목업 */}
         <div className="flex-shrink-0 w-full lg:w-auto flex justify-center">
-          <div className="relative w-full max-w-[600px] lg:w-[600px]">
+          <div className="relative w-full lg:h-[calc(100vh-8rem)]">
             {/* 패드 프레임 */}
-            <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl p-4 shadow-2xl">
+            <div className="relative w-full h-full lg:aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl p-4 shadow-2xl">
               {/* 화면 영역 */}
               <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-inner">
                 {/* 실제 작동하는 앱 화면 */}
