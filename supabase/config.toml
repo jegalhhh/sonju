@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.diseases-meta]
 verify_jwt = false
+
+[functions.generate-character]
+verify_jwt = false
