@@ -1,74 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Trash2 } from "lucide-react";
 const Landing = () => {
   const navigate = useNavigate();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteAllStorage = async () => {
-    if (!confirm("⚠️ Storage의 모든 이미지를 삭제하시겠습니까?")) {
-      return;
-    }
-
-    setIsDeleting(true);
-    try {
-      // List all files in food-images bucket
-      const { data: files, error: listError } = await supabase.storage
-        .from("food-images")
-        .list();
-
-      if (listError) throw listError;
-
-      if (!files || files.length === 0) {
-        toast({
-          title: "알림",
-          description: "삭제할 파일이 없습니다.",
-        });
-        return;
-      }
-
-      // Delete all files
-      const filePaths = files.map(file => file.name);
-      const { error: deleteError } = await supabase.storage
-        .from("food-images")
-        .remove(filePaths);
-
-      if (deleteError) throw deleteError;
-
-      toast({
-        title: "삭제 완료",
-        description: `${filePaths.length}개의 파일이 삭제되었습니다.`,
-      });
-    } catch (error) {
-      console.error("Storage deletion error:", error);
-      toast({
-        title: "오류",
-        description: "파일 삭제에 실패했습니다.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeleting(false);
-    }
-  };
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center p-6 relative">
-      {/* 임시 삭제 버튼 */}
-      <Button
-        onClick={handleDeleteAllStorage}
-        disabled={isDeleting}
-        variant="destructive"
-        size="sm"
-        className="fixed bottom-4 left-4 z-50"
-      >
-        <Trash2 className="h-4 w-4 mr-2" />
-        {isDeleting ? "삭제 중..." : "Storage 전체 삭제"}
-      </Button>
-
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center p-6">
       <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
         {/* 왼쪽: 로고 + 서비스 소개 */}
         <div className="flex-1 space-y-8 max-w-xl">
