@@ -93,6 +93,37 @@ const Index = () => {
     }
   }, [location.state, step]);
 
+  // Listen for postMessage from parent (Landing page iframe)
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      // Security: only accept messages from same origin
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data.type === 'LOAD_DEMO_IMAGE') {
+        const imageUrl = event.data.imageUrl;
+        
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const fileName = imageUrl.split('/').pop() || 'demo.jpg';
+          const file = new File([blob], fileName, { type: blob.type });
+          
+          handleFileSelect(file);
+          toast.success("샘플 이미지가 로드되었습니다!");
+        } catch (err) {
+          console.error('이미지 로드 실패:', err);
+          toast.error('이미지를 불러올 수 없습니다.');
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   const handleFileSelect = (selectedFile: File | null) => {
     if (!selectedFile) {
       setFile(null);

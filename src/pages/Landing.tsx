@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+
 const Landing = () => {
   const navigate = useNavigate();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { toast } = useToast();
   return <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center p-6">
       <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
         {/* 왼쪽: 로고 + 서비스 소개 */}
@@ -44,8 +49,13 @@ const Landing = () => {
               <div 
                 key={idx}
                 onClick={() => {
-                  // 이미지와 함께 분석 페이지로 이동
-                  navigate("/analyze", { state: { demoImageUrl: food.img } });
+                  if (iframeRef.current?.contentWindow) {
+                    iframeRef.current.contentWindow.postMessage({
+                      type: 'LOAD_DEMO_IMAGE',
+                      imageUrl: food.img
+                    }, window.location.origin);
+                    toast({ description: `${food.label} 샘플이 로드됩니다!` });
+                  }
                 }}
                 className="group relative w-28 h-28 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
               >
@@ -75,6 +85,7 @@ const Landing = () => {
             <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
               {/* 실제 작동하는 앱 화면 */}
               <iframe 
+                ref={iframeRef}
                 src="/analyze" 
                 className="w-full h-full border-0"
                 sandbox="allow-scripts allow-same-origin allow-forms"
