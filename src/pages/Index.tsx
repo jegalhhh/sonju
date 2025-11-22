@@ -146,7 +146,7 @@ const Index = () => {
                 <img
                   src={previewUrl}
                   alt="업로드된 이미지 미리보기"
-                  className="max-w-full max-h-[320px] object-contain"
+                  className="absolute inset-0 w-full h-full object-cover rounded-lg"
                 />
               ) : (
                 <div className="text-center p-8">
