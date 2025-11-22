@@ -7,7 +7,8 @@ const Landing = () => {
   const navigate = useNavigate();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
-  return <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center p-6">
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 flex items-center justify-center p-6">
       <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
         {/* 왼쪽: 로고 + 서비스 소개 */}
         <div className="flex-1 space-y-8 max-w-xl">
@@ -22,18 +23,21 @@ const Landing = () => {
           {/* 메인 카피 */}
           <div className="space-y-4 text-center lg:text-left">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-              부모님의 밥상을<br />건강하고 따뜻하게
+              부모님의 밥상을
+              <br />
+              건강하고 따뜻하게
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              AI 기반 음식 분석으로 부모님의 건강한 식습관을 돕습니다.<br />
+              AI 기반 음식 분석으로 부모님의 건강한 식습관을 돕습니다.
+              <br />
               사진 한 장으로 영양소 분석부터 질병별 맞춤 조언까지.
             </p>
           </div>
 
           {/* 시작하기 버튼 */}
-          <Button 
-            onClick={() => navigate("/analyze")} 
-            size="lg" 
+          <Button
+            onClick={() => navigate("/analyze")}
+            size="lg"
             className="w-full lg:w-auto px-12 py-6 text-xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]"
           >
             🍽️ 시작하기
@@ -42,28 +46,27 @@ const Landing = () => {
           {/* 음식 갤러리 */}
           <div className="flex gap-4 justify-center lg:justify-start">
             {[
-              { img: "/food-1.jpg", label: "🍤 튀김" },
-              { img: "/food-2.jpeg", label: "🍲 찌개" },
-              { img: "/food-3.jpg", label: "☕ 커피" }
+              { img: "/food-1.jpg", label: "치킨" },
+              { img: "/food-2.jpeg", label: "찌개" },
+              { img: "/food-3.jpg", label: "커피" },
             ].map((food, idx) => (
-              <div 
+              <div
                 key={idx}
                 onClick={() => {
                   if (iframeRef.current?.contentWindow) {
-                    iframeRef.current.contentWindow.postMessage({
-                      type: 'LOAD_DEMO_IMAGE',
-                      imageUrl: food.img
-                    }, window.location.origin);
+                    iframeRef.current.contentWindow.postMessage(
+                      {
+                        type: "LOAD_DEMO_IMAGE",
+                        imageUrl: food.img,
+                      },
+                      window.location.origin,
+                    );
                     toast({ description: `${food.label} 샘플이 로드됩니다!` });
                   }
                 }}
                 className="group relative w-28 h-28 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
               >
-                <img 
-                  src={food.img} 
-                  alt={food.label}
-                  className="w-full h-full object-cover"
-                />
+                <img src={food.img} alt={food.label} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-2">
                   <span className="text-white text-sm font-semibold">{food.label}</span>
                 </div>
@@ -84,9 +87,9 @@ const Landing = () => {
             {/* 화면 영역 (테두리 없이) */}
             <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
               {/* 실제 작동하는 앱 화면 */}
-              <iframe 
+              <iframe
                 ref={iframeRef}
-                src="/analyze" 
+                src="/analyze"
                 className="w-full h-full border-0"
                 sandbox="allow-scripts allow-same-origin allow-forms"
                 title="앱 미리보기"
@@ -95,6 +98,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default Landing;
