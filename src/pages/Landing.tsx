@@ -27,7 +27,7 @@ const Landing = () => {
               <br />
               건강하고 따뜻하게
             </h2>
-            <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed">
+            <p className="text-xl lg:text-xl text-muted-foreground leading-relaxed">
               AI 기반 음식 분석으로 부모님의 건강한 식습관을 돕습니다.
               <br />
               사진 한 장으로 영양소 분석부터 질병별 맞춤 조언까지.
