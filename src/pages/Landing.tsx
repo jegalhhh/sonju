@@ -36,8 +36,9 @@ const Landing = () => {
         </div>
 
         {/* 오른쪽: 패드 목업 */}
-        <div className="flex-shrink-0 w-full lg:w-1/2 flex justify-center">
-          <div className="relative w-full h-[calc(100vh-8rem)]">
+        <div className="flex-shrink-0 w-full lg:w-1/2 flex flex-col gap-8 justify-center">
+          {/* 패드 목업 */}
+          <div className="relative w-full h-[calc(100vh-16rem)]">
             {/* 화면 영역 (테두리 없이) */}
             <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
               {/* 실제 작동하는 앱 화면 */}
@@ -48,6 +49,29 @@ const Landing = () => {
                 title="앱 미리보기"
               />
             </div>
+          </div>
+
+          {/* 음식 갤러리 */}
+          <div className="flex gap-4 justify-center">
+            {[
+              { img: "/food-1.jpg", label: "🍤 튀김" },
+              { img: "/food-2.jpeg", label: "🍲 찌개" },
+              { img: "/food-3.jpg", label: "☕ 커피" }
+            ].map((food, idx) => (
+              <div 
+                key={idx}
+                className="group relative w-32 h-32 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
+              >
+                <img 
+                  src={food.img} 
+                  alt={food.label}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-2">
+                  <span className="text-white text-sm font-semibold">{food.label}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
