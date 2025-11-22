@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Save } from "lucide-react";
 
 type Step = "intro" | "analyze";
 
@@ -15,6 +17,8 @@ interface Disease {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   // Step management
   const [step, setStep] = useState<Step>("intro");
 
@@ -177,6 +181,32 @@ const Index = () => {
       .join(", ");
   };
 
+  const handleSave = async () => {
+    if (!result || !previewUrl) {
+      toast.error("저장할 분석 결과가 없습니다.");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("food_logs")
+        .insert({
+          food_name: result,
+          image_url: previewUrl,
+          calories: calories || null,
+          risk_level: riskLevel || null,
+          risk_comment: riskComment || null,
+        });
+
+      if (error) throw error;
+
+      toast.success("식단 기록이 저장되었습니다!");
+    } catch (err: any) {
+      console.error("Error saving food log:", err);
+      toast.error("저장에 실패했습니다.");
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -295,13 +325,22 @@ const Index = () => {
                 </p>
               </div>
 
-              <Button
-                onClick={handleProceedToAnalyze}
-                disabled={!age || !gender || !height || !weight}
-                className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] mt-8"
-              >
-                🍽️ 식단 체크하기
-              </Button>
+              <div className="flex flex-col gap-4 mt-8">
+                <Button
+                  onClick={handleProceedToAnalyze}
+                  disabled={!age || !gender || !height || !weight}
+                  className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                >
+                  🍽️ 식단 체크하기
+                </Button>
+                <Button
+                  onClick={() => navigate("/my-diet")}
+                  variant="outline"
+                  className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                >
+                  📋 내 식단 보기
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </main>
@@ -440,6 +479,16 @@ const Index = () => {
                   "🔍 분석하기"
                 )}
               </Button>
+              {result && (
+                <Button
+                  onClick={handleSave}
+                  variant="secondary"
+                  className="h-14 px-10 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
+                >
+                  <Save className="mr-2 h-5 w-5" />
+                  저장
+                </Button>
+              )}
               <Button
                 onClick={handleReset}
                 variant="outline"
