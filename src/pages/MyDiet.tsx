@@ -314,7 +314,7 @@ const MyDiet = () => {
         {healthPredictions && (
           <Card className="mb-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
             <CardContent className="p-6">
-              <h2 className="text-xl font-bold mb-4 text-primary">건강 위험도 분석</h2>
+              <h2 className="text-xl font-bold mb-4 text-primary">오늘 하루 건강 위험도 분석</h2>
               {predictingHealth ? (
                 <div className="text-center py-4">
                   <p className="text-muted-foreground">분석 중...</p>
