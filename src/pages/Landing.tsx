@@ -9,7 +9,7 @@ const Landing = () => {
       <div className="max-w-2xl w-full text-center space-y-8">
         {/* 서비스명 */}
         <div className="space-y-3">
-          <h1 className="text-5xl md:text-6xl font-bold text-primary">밥상 손주</h1>
+          <h1 className="text-5xl md:text-6xl font-jua text-primary tracking-tight">밥상 손주</h1>
           <p className="text-lg md:text-xl text-muted-foreground">부모님의 밥상을 건강하고 따뜻하게</p>
         </div>
 
