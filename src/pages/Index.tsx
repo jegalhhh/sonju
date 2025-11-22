@@ -465,11 +465,6 @@ const Index = () => {
                       <p className="text-2xl font-bold text-primary">
                         음식: {result}
                       </p>
-                      {(riskLevel || riskComment) && (
-                        <p className="text-lg font-medium text-foreground">
-                          위험도: {riskLevel}{riskComment && ` - ${riskComment}`}
-                        </p>
-                      )}
                       {calories && (
                         <p className="text-lg font-medium text-foreground">
                           대략적인 칼로리: {calories}
@@ -484,6 +479,41 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Risk Box */}
+            {riskLevel && (
+              <Card className={`border-2 shadow-lg ${
+                riskLevel === "안전" 
+                  ? "bg-green-50 dark:bg-green-950/20 border-green-500"
+                  : riskLevel === "위험"
+                  ? "bg-red-50 dark:bg-red-950/20 border-red-500"
+                  : "bg-yellow-50 dark:bg-yellow-950/20 border-yellow-500"
+              }`}>
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">
+                      {riskLevel === "안전" ? "🟢" : riskLevel === "위험" ? "🔴" : "🟡"}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`text-xl font-bold mb-2 ${
+                        riskLevel === "안전"
+                          ? "text-green-700 dark:text-green-300"
+                          : riskLevel === "위험"
+                          ? "text-red-700 dark:text-red-300"
+                          : "text-yellow-700 dark:text-yellow-300"
+                      }`}>
+                        {riskLevel === "안전" ? "안전" : riskLevel === "위험" ? "위험" : "주의"}
+                      </h3>
+                      {riskComment && (
+                        <p className="text-base text-foreground/90">
+                          {riskComment}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </CardContent>
         </Card>
       </main>
