@@ -175,7 +175,7 @@ const MyDiet = () => {
             {foodLogs.map((log) => (
               <Card key={log.id} className="overflow-hidden">
                 <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-6">
+                  <div className="flex flex-row gap-6">
                     <div className="flex-shrink-0">
                       <img
                         src={log.image_url}
