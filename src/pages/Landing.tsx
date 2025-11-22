@@ -38,18 +38,15 @@ const Landing = () => {
         {/* 오른쪽: 패드 목업 */}
         <div className="flex-shrink-0 w-full lg:w-1/2 flex justify-center">
           <div className="relative w-full h-[calc(100vh-8rem)]">
-            {/* 패드 프레임 */}
-            <div className="relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl p-8 shadow-2xl">
-              {/* 화면 영역 */}
-              <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-inner">
-                {/* 실제 작동하는 앱 화면 */}
-                <iframe 
-                  src="/analyze" 
-                  className="w-full h-full border-0"
-                  sandbox="allow-scripts allow-same-origin allow-forms"
-                  title="앱 미리보기"
-                />
-              </div>
+            {/* 화면 영역 (테두리 없이) */}
+            <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
+              {/* 실제 작동하는 앱 화면 */}
+              <iframe 
+                src="/analyze" 
+                className="w-full h-full border-0"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                title="앱 미리보기"
+              />
             </div>
           </div>
         </div>
