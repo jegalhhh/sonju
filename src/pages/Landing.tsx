@@ -21,13 +21,13 @@ const Landing = () => {
           </div>
 
           {/* 메인 카피 */}
-          <div className="space-y-4 text-center lg:text-left">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+          <div className="space-y-6 text-center lg:text-left">
+            <h2 className="text-4xl lg:text-5xl font-bold text-foreground leading-tight">
               부모님의 밥상을
               <br />
               건강하고 따뜻하게
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed">
               AI 기반 음식 분석으로 부모님의 건강한 식습관을 돕습니다.
               <br />
               사진 한 장으로 영양소 분석부터 질병별 맞춤 조언까지.
@@ -35,7 +35,7 @@ const Landing = () => {
           </div>
 
           {/* 음식 갤러리 */}
-          <div className="flex gap-4 justify-center lg:justify-start">
+          <div className="flex gap-6 justify-center lg:justify-start">
             {[
               { img: "/food-1.jpg", label: "치킨" },
               { img: "/food-2.jpeg", label: "된장찌개" },
@@ -55,19 +55,19 @@ const Landing = () => {
                     toast({ description: `${food.label} 샘플이 로드됩니다!` });
                   }
                 }}
-                className="group relative w-28 h-28 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                className="group relative w-36 h-36 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
               >
                 <img src={food.img} alt={food.label} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-2">
-                  <span className="text-white text-sm font-semibold">{food.label}</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-3">
+                  <span className="text-white text-base font-semibold">{food.label}</span>
                 </div>
                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <span className="text-white text-2xl">👆</span>
+                  <span className="text-white text-3xl">👆</span>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground text-center lg:text-left mt-2">
+          <p className="text-base text-muted-foreground text-center lg:text-left mt-3">
             ⬆️ 샘플 음식을 클릭하면 바로 분석할 수 있어요
           </p>
         </div>
