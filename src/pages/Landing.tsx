@@ -16,7 +16,7 @@ const Landing = () => {
         </div>
 
         {/* 시작하기 버튼 */}
-        <Button onClick={() => navigate("/analyze")} size="lg" className="w-full md:w-auto px-16 py-8 text-2xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
+        <Button onClick={() => navigate("/analyze")} size="lg" className="w-full px-16 py-8 text-2xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
           🍽️ 시작하기
         </Button>
       </div>
