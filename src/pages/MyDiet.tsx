@@ -197,7 +197,26 @@ const MyDiet = () => {
 
       if (error) throw error;
       if (data) {
-        setHealthPredictions(data);
+        // Normalize Python API response structure
+        const normalized: HealthPredictions = {
+          diabetes: {
+            risk: data.diabetes.diabetes_risk,
+            top_factors: data.diabetes.top_factors || []
+          },
+          hypertension: {
+            risk: data.hypertension.hypertension_risk,
+            top_factors: data.hypertension.top_factors || []
+          },
+          dyslipidemia: {
+            risk: data.dyslipidemia.dyslipidemia_risk,
+            top_factors: data.dyslipidemia.top_factors || []
+          },
+          osas: {
+            risk: data.osas.osas_risk,
+            top_factors: data.osas.top_factors || []
+          }
+        };
+        setHealthPredictions(normalized);
       }
     } catch (error: any) {
       console.error("Health prediction error:", error);
