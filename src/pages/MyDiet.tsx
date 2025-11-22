@@ -12,6 +12,13 @@ interface FoodLog {
   food_name: string;
   image_url: string;
   calories: string | null;
+  protein: string | null;
+  fat: string | null;
+  carbs: string | null;
+  sugar: string | null;
+  sodium: string | null;
+  calcium: string | null;
+  vitamin_c: string | null;
   risk_level: string | null;
   risk_comment: string | null;
   created_at: string;
@@ -26,6 +33,8 @@ const MyDiet = () => {
   } = useUserInfo();
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [healthPredictions, setHealthPredictions] = useState<any>(null);
+  const [predictingHealth, setPredictingHealth] = useState(false);
 
   // Calculate BMR using Harris-Benedict equation
   const calculateDailyCalories = () => {
@@ -59,9 +68,74 @@ const MyDiet = () => {
   const dailyCalories = calculateDailyCalories();
   const consumedCalories = calculateConsumedCalories();
   const caloriePercentage = dailyCalories ? Math.min(Math.round(consumedCalories / dailyCalories * 100), 100) : 0;
+  
   useEffect(() => {
     loadFoodLogs();
   }, []);
+
+  // Calculate health risks when user info and food logs are available
+  useEffect(() => {
+    if (userInfo && foodLogs.length > 0) {
+      calculateHealthRisks();
+    }
+  }, [userInfo, foodLogs]);
+
+  const calculateHealthRisks = async () => {
+    if (!userInfo || foodLogs.length === 0) return;
+
+    setPredictingHealth(true);
+    try {
+      // Sum up daily nutrition
+      const parseNumber = (str: string | null): number => {
+        if (!str) return 0;
+        const match = str.match(/(\d+\.?\d*)/);
+        return match ? parseFloat(match[1]) : 0;
+      };
+
+      const dailyNutrition = foodLogs.reduce((acc, log) => ({
+        energy: acc.energy + parseNumber(log.calories),
+        protein: acc.protein + parseNumber(log.protein),
+        fat: acc.fat + parseNumber(log.fat),
+        carbs: acc.carbs + parseNumber(log.carbs),
+        sugar: acc.sugar + parseNumber(log.sugar),
+        sodium_mg: acc.sodium_mg + parseNumber(log.sodium),
+        calcium_mg: acc.calcium_mg + parseNumber(log.calcium),
+        vitaminc_mg: acc.vitaminc_mg + parseNumber(log.vitamin_c),
+      }), {
+        energy: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0,
+        sugar: 0,
+        sodium_mg: 0,
+        calcium_mg: 0,
+        vitaminc_mg: 0,
+      });
+
+      const { data, error } = await supabase.functions.invoke('predict-health', {
+        body: {
+          gender: userInfo.gender === 'male' ? 1 : 0,
+          age: userInfo.age,
+          ...dailyNutrition,
+        }
+      });
+
+      if (error) throw error;
+      if (data?.predictions) {
+        setHealthPredictions(data.predictions);
+      }
+    } catch (error) {
+      console.error("Health prediction error:", error);
+      toast({
+        title: "건강 위험도 분석 실패",
+        description: "건강 위험도를 분석하는 중 오류가 발생했습니다.",
+        variant: "destructive"
+      });
+    } finally {
+      setPredictingHealth(false);
+    }
+  };
+  
   const loadFoodLogs = async () => {
     try {
       const {
@@ -128,6 +202,68 @@ const MyDiet = () => {
       </header>
 
       <main className="container mx-auto py-8 px-4 max-w-4xl">
+        {/* Health Risk Analysis */}
+        {healthPredictions && (
+          <Card className="mb-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold mb-4 text-primary">건강 위험도 분석</h2>
+              {predictingHealth ? (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">분석 중...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">당뇨병</span>
+                        <span className="font-bold text-lg">{healthPredictions.diabetes}</span>
+                      </div>
+                      <Progress 
+                        value={parseFloat(healthPredictions.diabetes)} 
+                        className="h-3" 
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">고혈압</span>
+                        <span className="font-bold text-lg">{healthPredictions.hypertension}</span>
+                      </div>
+                      <Progress 
+                        value={parseFloat(healthPredictions.hypertension)} 
+                        className="h-3" 
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">이상지질혈증</span>
+                        <span className="font-bold text-lg">{healthPredictions.dyslipidemia}</span>
+                      </div>
+                      <Progress 
+                        value={parseFloat(healthPredictions.dyslipidemia)} 
+                        className="h-3" 
+                      />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">폐쇄성수면무호흡증</span>
+                        <span className="font-bold text-lg">{healthPredictions.sleep_apnea}</span>
+                      </div>
+                      <Progress 
+                        value={parseFloat(healthPredictions.sleep_apnea)} 
+                        className="h-3" 
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-4 text-center">
+                    * AI 기반 예측 결과이며 의학적 진단이 아닙니다. 정확한 진단은 의료 전문가와 상담하세요.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {dailyCalories && <Card className="mb-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
             <CardContent className="p-6">
               <h2 className="text-xl font-bold mb-4 text-primary">하루 권장 칼로리</h2>
