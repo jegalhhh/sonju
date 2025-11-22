@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { DISEASES } from "../_shared/diseases.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,15 +12,11 @@ serve(async (req) => {
   }
 
   try {
-    const diseases = [
-      { id: "htn", name: "고혈압", description: "혈압이 정상보다 높은 상태" },
-      { id: "dm", name: "당뇨병", description: "혈당이 정상보다 높은 상태" },
-      { id: "dyslipidemia", name: "고지혈증", description: "혈중 지질 수치가 높은 상태" },
-      { id: "obesity", name: "비만", description: "체질량지수가 높은 상태" },
-      { id: "kidney", name: "신장질환", description: "신장 기능이 저하된 상태" },
-      { id: "liver", name: "간질환", description: "간 기능이 저하된 상태" },
-      { id: "gout", name: "통풍", description: "요산이 과다하게 축적되는 상태" },
-    ];
+    const diseases = DISEASES.map(({ id, name, description }) => ({
+      id,
+      name,
+      description,
+    }));
 
     return new Response(
       JSON.stringify({ items: diseases }),
