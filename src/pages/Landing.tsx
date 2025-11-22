@@ -43,6 +43,10 @@ const Landing = () => {
             ].map((food, idx) => (
               <div 
                 key={idx}
+                onClick={() => {
+                  // 이미지와 함께 분석 페이지로 이동
+                  navigate("/analyze", { state: { demoImageUrl: food.img } });
+                }}
                 className="group relative w-28 h-28 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
               >
                 <img 
@@ -53,9 +57,15 @@ const Landing = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-2">
                   <span className="text-white text-sm font-semibold">{food.label}</span>
                 </div>
+                <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <span className="text-white text-2xl">👆</span>
+                </div>
               </div>
             ))}
           </div>
+          <p className="text-sm text-muted-foreground text-center lg:text-left mt-2">
+            ⬆️ 샘플 음식을 클릭하면 바로 분석할 수 있어요
+          </p>
         </div>
 
         {/* 오른쪽: 패드 목업 */}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,15 @@ interface Disease {
 
 const Index = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setUserInfo } = useUserInfo();
   
   // Step management
-  const [step, setStep] = useState<Step>("intro");
+  const [step, setStep] = useState<Step>(() => {
+    // Landing에서 바로 온 경우 analyze 단계로 시작
+    const state = location.state as { demoImageUrl?: string } | null;
+    return state?.demoImageUrl ? "analyze" : "intro";
+  });
 
   // Personal info
   const [age, setAge] = useState<string>("");
@@ -66,6 +71,27 @@ const Index = () => {
 
     loadDiseases();
   }, []);
+
+  // Load demo image if provided from Landing page
+  useEffect(() => {
+    const state = location.state as { demoImageUrl?: string } | null;
+    if (state?.demoImageUrl && step === "analyze") {
+      const loadDemoImage = async () => {
+        try {
+          const response = await fetch(state.demoImageUrl);
+          const blob = await response.blob();
+          const fileName = state.demoImageUrl.split('/').pop() || 'demo.jpg';
+          const file = new File([blob], fileName, { type: blob.type });
+          handleFileSelect(file);
+          toast.success("샘플 이미지가 로드되었습니다!");
+        } catch (err) {
+          console.error('데모 이미지 로드 실패:', err);
+          toast.error('이미지를 불러올 수 없습니다.');
+        }
+      };
+      loadDemoImage();
+    }
+  }, [location.state, step]);
 
   const handleFileSelect = (selectedFile: File | null) => {
     if (!selectedFile) {
