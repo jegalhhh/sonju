@@ -2,3 +2,6 @@ project_id = "xwaiwdvttznprmqcudok"
 
 [functions.predict]
 verify_jwt = false
+
+[functions.diseases-meta]
+verify_jwt = false
