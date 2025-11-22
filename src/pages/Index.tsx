@@ -201,6 +201,7 @@ const Index = () => {
       if (error) throw error;
 
       toast.success("식단 기록이 저장되었습니다!");
+      navigate("/my-diet");
     } catch (err: any) {
       console.error("Error saving food log:", err);
       toast.error("저장에 실패했습니다.");
