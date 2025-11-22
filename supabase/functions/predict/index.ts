@@ -62,19 +62,23 @@ Deno.serve(async (req) => {
       diseasePrompt = "\n\n사용자는 특별한 질병이 없습니다. 일반적인 건강 측면에서 평가해주세요.";
     }
 
-    const prompt = `이 이미지에 있는 음식을 아래 리스트에서 찾아주세요:
-된장찌개, 치킨, 커피
+    const prompt = `이 이미지에 있는 음식을 아래 리스트에서 찾아주세요.
 
-리스트에 없으면 '해당 사항 없음'이라고 답해주세요.${diseasePrompt}
+**음식 리스트 (반드시 이 중 하나만 선택):**
+- 된장찌개
+- 치킨
+- 커피
 
-출력 형식 (반드시 두 줄만):
+**중요:** 리스트에 정확히 일치하는 음식이 없으면 반드시 '해당 사항 없음'이라고만 답하세요.${diseasePrompt}
+
+**출력 형식 (정확히 두 줄만, 다른 텍스트 절대 금지):**
 음식: <음식 이름 또는 '해당 사항 없음'>
 위험도: 안전|주의|위험 - 이유
 
-규칙:
-1) 첫 줄에는 음식 리스트 중 하나 또는 '해당 사항 없음'만 쓴다.
-2) 둘째 줄에는 '위험도: 안전|주의|위험 - 이유' 형식으로만 작성.
-3) 다른 줄이나 설명은 추가로 쓰지 않는다.`;
+**규칙:**
+1) 첫 줄: "음식: " 뒤에 리스트의 정확한 음식 이름 하나 또는 '해당 사항 없음'만 쓴다. "1줄:", "첫째 줄:" 같은 텍스트는 절대 쓰지 않는다.
+2) 둘째 줄: "위험도: " 뒤에 안전/주의/위험 중 하나와 " - " 뒤에 이유를 쓴다. "2줄:", "둘째 줄:" 같은 텍스트는 절대 쓰지 않는다.
+3) 다른 줄이나 설명은 추가하지 않는다.`;
 
     console.log("OpenAI Vision API 호출 시작...");
 
@@ -139,16 +143,24 @@ Deno.serve(async (req) => {
     let riskLevel = "";
     let riskComment = "";
 
-    // 첫 번째 줄에서 음식 추출
+    // 첫 번째 줄에서 음식 추출 (불필요한 텍스트 제거)
     const foodLine = lines.find((line: string) => line.includes("음식:"));
     if (foodLine) {
-      food = foodLine.replace("음식:", "").trim();
+      food = foodLine
+        .replace("음식:", "")
+        .replace(/^\d+줄:\s*/i, "") // "1줄:", "2줄:" 등 제거
+        .replace(/^첫.*줄:\s*/i, "") // "첫 줄:", "첫째 줄:" 등 제거
+        .trim();
     }
 
-    // 두 번째 줄에서 위험도 추출
+    // 두 번째 줄에서 위험도 추출 (불필요한 텍스트 제거)
     const riskLine = lines.find((line: string) => line.includes("위험도:"));
     if (riskLine) {
-      const riskPart = riskLine.replace("위험도:", "").trim();
+      const riskPart = riskLine
+        .replace("위험도:", "")
+        .replace(/^\d+줄:\s*/i, "") // "1줄:", "2줄:" 등 제거
+        .replace(/^둘.*줄:\s*/i, "") // "둘째 줄:" 등 제거
+        .trim();
       const dashIndex = riskPart.indexOf("-");
       if (dashIndex !== -1) {
         riskLevel = riskPart.substring(0, dashIndex).trim();
