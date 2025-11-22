@@ -47,7 +47,7 @@ const Landing = () => {
           <div className="flex gap-4 justify-center lg:justify-start">
             {[
               { img: "/food-1.jpg", label: "치킨" },
-              { img: "/food-2.jpeg", label: "찌개" },
+              { img: "/food-2.jpeg", label: "된장찌개" },
               { img: "/food-3.jpg", label: "커피" },
             ].map((food, idx) => (
               <div
