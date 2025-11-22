@@ -124,11 +124,22 @@ const MyDiet = () => {
       if (data?.predictions) {
         setHealthPredictions(data.predictions);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Health prediction error:", error);
+      
+      let errorMessage = "건강 위험도 분석 실패";
+      let errorDescription = "건강 위험도를 분석하는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+      
+      // Handle specific error types
+      if (error.message?.includes("429") || error.message?.includes("많습니다")) {
+        errorDescription = "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+      } else if (error.message?.includes("network") || error.message?.includes("Failed to fetch")) {
+        errorDescription = "네트워크 연결을 확인해 주세요.";
+      }
+      
       toast({
-        title: "건강 위험도 분석 실패",
-        description: "건강 위험도를 분석하는 중 오류가 발생했습니다.",
+        title: errorMessage,
+        description: errorDescription,
         variant: "destructive"
       });
     } finally {
