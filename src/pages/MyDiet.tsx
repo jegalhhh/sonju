@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Trash2 } from "lucide-react";
+import { useUserInfo } from "@/contexts/UserInfoContext";
 
 interface FoodLog {
   id: string;
@@ -19,8 +21,42 @@ interface FoodLog {
 const MyDiet = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { userInfo } = useUserInfo();
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Calculate BMR using Harris-Benedict equation
+  const calculateDailyCalories = () => {
+    if (!userInfo) return null;
+    
+    const { age, gender, height, weight } = userInfo;
+    let bmr: number;
+    
+    if (gender === "male") {
+      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+    
+    // Apply activity factor for elderly (1.3)
+    return Math.round(bmr * 1.3);
+  };
+
+  // Calculate total consumed calories
+  const calculateConsumedCalories = () => {
+    return foodLogs.reduce((total, log) => {
+      if (!log.calories) return total;
+      // Parse calories from strings like "약 550 kcal" or "550 kcal"
+      const match = log.calories.match(/(\d+)/);
+      return total + (match ? parseInt(match[1]) : 0);
+    }, 0);
+  };
+
+  const dailyCalories = calculateDailyCalories();
+  const consumedCalories = calculateConsumedCalories();
+  const caloriePercentage = dailyCalories 
+    ? Math.min(Math.round((consumedCalories / dailyCalories) * 100), 100)
+    : 0;
 
   useEffect(() => {
     loadFoodLogs();
@@ -88,6 +124,36 @@ const MyDiet = () => {
       </header>
 
       <main className="container mx-auto py-8 px-4 max-w-4xl">
+        {dailyCalories && (
+          <Card className="mb-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold mb-4 text-primary">하루 권장 칼로리</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-lg">
+                  <span className="font-medium">권장 칼로리:</span>
+                  <span className="font-bold text-primary">{dailyCalories} kcal</span>
+                </div>
+                <div className="flex justify-between items-center text-lg">
+                  <span className="font-medium">섭취 칼로리:</span>
+                  <span className="font-bold">{consumedCalories} kcal</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">달성률</span>
+                    <span className="text-2xl font-bold text-primary">{caloriePercentage}%</span>
+                  </div>
+                  <Progress value={caloriePercentage} className="h-4" />
+                </div>
+                {caloriePercentage >= 100 && (
+                  <p className="text-sm text-center text-muted-foreground mt-2">
+                    🎉 오늘 권장 칼로리를 달성했습니다!
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {loading ? (
           <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">불러오는 중...</p>
