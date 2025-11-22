@@ -91,6 +91,31 @@ const MyDiet = () => {
     }, 0);
   };
 
+  const getRiskLevel = (risk: number): { level: string; color: string; bgColor: string; borderColor: string } => {
+    if (risk < 0.4) {
+      return {
+        level: '안전',
+        color: 'text-green-700 dark:text-green-300',
+        bgColor: 'bg-green-50 dark:bg-green-950/20',
+        borderColor: 'border-green-500'
+      };
+    } else if (risk < 0.8) {
+      return {
+        level: '주의',
+        color: 'text-yellow-700 dark:text-yellow-300',
+        bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
+        borderColor: 'border-yellow-500'
+      };
+    } else {
+      return {
+        level: '위험',
+        color: 'text-red-700 dark:text-red-300',
+        bgColor: 'bg-red-50 dark:bg-red-950/20',
+        borderColor: 'border-red-500'
+      };
+    }
+  };
+
   const dailyCalories = calculateDailyCalories();
   const consumedCalories = calculateConsumedCalories();
   const caloriePercentage = dailyCalories ? Math.min(Math.round(consumedCalories / dailyCalories * 100), 100) : 0;
@@ -321,9 +346,14 @@ const MyDiet = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
+                  <Card className={`${getRiskLevel(healthPredictions.diabetes.risk).bgColor} ${getRiskLevel(healthPredictions.diabetes.risk).borderColor} border-2`}>
                     <CardHeader>
-                      <CardTitle className="text-sm">당뇨병</CardTitle>
+                      <CardTitle className="text-sm flex justify-between items-center">
+                        <span>당뇨병</span>
+                        <span className={`text-xs font-bold ${getRiskLevel(healthPredictions.diabetes.risk).color}`}>
+                          {getRiskLevel(healthPredictions.diabetes.risk).level}
+                        </span>
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Progress 
@@ -334,7 +364,7 @@ const MyDiet = () => {
                         위험도: {(healthPredictions.diabetes.risk * 100).toFixed(1)}%
                       </p>
                       {healthPredictions.diabetes.risk >= 0.4 && (
-                        <div className="mt-3 p-2 bg-muted rounded-md">
+                        <div className="mt-3 p-2 bg-background/50 rounded-md">
                           {adviceLoading.diabetes ? (
                             <p className="text-xs text-muted-foreground italic">생성 중...</p>
                           ) : healthAdvice.diabetes ? (
@@ -345,9 +375,14 @@ const MyDiet = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className={`${getRiskLevel(healthPredictions.hypertension.risk).bgColor} ${getRiskLevel(healthPredictions.hypertension.risk).borderColor} border-2`}>
                     <CardHeader>
-                      <CardTitle className="text-sm">고혈압</CardTitle>
+                      <CardTitle className="text-sm flex justify-between items-center">
+                        <span>고혈압</span>
+                        <span className={`text-xs font-bold ${getRiskLevel(healthPredictions.hypertension.risk).color}`}>
+                          {getRiskLevel(healthPredictions.hypertension.risk).level}
+                        </span>
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Progress 
@@ -358,7 +393,7 @@ const MyDiet = () => {
                         위험도: {(healthPredictions.hypertension.risk * 100).toFixed(1)}%
                       </p>
                       {healthPredictions.hypertension.risk >= 0.4 && (
-                        <div className="mt-3 p-2 bg-muted rounded-md">
+                        <div className="mt-3 p-2 bg-background/50 rounded-md">
                           {adviceLoading.hypertension ? (
                             <p className="text-xs text-muted-foreground italic">생성 중...</p>
                           ) : healthAdvice.hypertension ? (
@@ -369,9 +404,14 @@ const MyDiet = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className={`${getRiskLevel(healthPredictions.dyslipidemia.risk).bgColor} ${getRiskLevel(healthPredictions.dyslipidemia.risk).borderColor} border-2`}>
                     <CardHeader>
-                      <CardTitle className="text-sm">이상지질혈증</CardTitle>
+                      <CardTitle className="text-sm flex justify-between items-center">
+                        <span>이상지질혈증</span>
+                        <span className={`text-xs font-bold ${getRiskLevel(healthPredictions.dyslipidemia.risk).color}`}>
+                          {getRiskLevel(healthPredictions.dyslipidemia.risk).level}
+                        </span>
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Progress 
@@ -382,7 +422,7 @@ const MyDiet = () => {
                         위험도: {(healthPredictions.dyslipidemia.risk * 100).toFixed(1)}%
                       </p>
                       {healthPredictions.dyslipidemia.risk >= 0.4 && (
-                        <div className="mt-3 p-2 bg-muted rounded-md">
+                        <div className="mt-3 p-2 bg-background/50 rounded-md">
                           {adviceLoading.dyslipidemia ? (
                             <p className="text-xs text-muted-foreground italic">생성 중...</p>
                           ) : healthAdvice.dyslipidemia ? (
@@ -393,9 +433,14 @@ const MyDiet = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className={`${getRiskLevel(healthPredictions.osas.risk).bgColor} ${getRiskLevel(healthPredictions.osas.risk).borderColor} border-2`}>
                     <CardHeader>
-                      <CardTitle className="text-sm">수면무호흡증</CardTitle>
+                      <CardTitle className="text-sm flex justify-between items-center">
+                        <span>수면무호흡증</span>
+                        <span className={`text-xs font-bold ${getRiskLevel(healthPredictions.osas.risk).color}`}>
+                          {getRiskLevel(healthPredictions.osas.risk).level}
+                        </span>
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Progress 
@@ -406,7 +451,7 @@ const MyDiet = () => {
                         위험도: {(healthPredictions.osas.risk * 100).toFixed(1)}%
                       </p>
                       {healthPredictions.osas.risk >= 0.4 && (
-                        <div className="mt-3 p-2 bg-muted rounded-md">
+                        <div className="mt-3 p-2 bg-background/50 rounded-md">
                           {adviceLoading.osas ? (
                             <p className="text-xs text-muted-foreground italic">생성 중...</p>
                           ) : healthAdvice.osas ? (
