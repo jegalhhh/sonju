@@ -124,7 +124,7 @@ const Index = () => {
             <div
               onClick={handleUploadAreaClick}
               className={`
-                relative w-full min-h-[320px] rounded-lg border-2 border-dashed
+                relative w-full min-h-[480px] rounded-lg border-2 border-dashed
                 flex items-center justify-center cursor-pointer
                 transition-all duration-300 overflow-hidden
                 ${
