@@ -39,7 +39,7 @@ const Landing = () => {
         <div className="flex-shrink-0 w-full lg:w-1/2 flex justify-center">
           <div className="relative w-full h-[calc(100vh-8rem)]">
             {/* 패드 프레임 */}
-            <div className="relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl p-4 shadow-2xl">
+            <div className="relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl p-8 shadow-2xl">
               {/* 화면 영역 */}
               <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-inner">
                 {/* 실제 작동하는 앱 화면 */}
