@@ -114,7 +114,7 @@ const MyDiet = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/analyze")}
             className="text-primary-foreground hover:bg-primary-foreground/20"
           >
             <ArrowLeft className="h-6 w-6" />
