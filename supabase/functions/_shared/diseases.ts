@@ -2,51 +2,43 @@ export interface Disease {
   id: string;
   name: string;
   description: string;
-  concerns: string;
 }
 
 export const DISEASES: Disease[] = [
   {
     id: "htn",
     name: "고혈압",
-    description: "혈압이 정상보다 높은 상태",
-    concerns: "나트륨 함량이 높으면 위험",
+    description: "나트륨(소금) 섭취를 줄여야 하는 질환. 짠 음식, 국물 요리, 가공식품 등이 위험함.",
   },
   {
     id: "dm",
     name: "당뇨병",
-    description: "혈당이 정상보다 높은 상태",
-    concerns: "당분과 탄수화물 함량이 높으면 위험",
+    description: "당분과 탄수화물 섭취를 조절해야 하는 질환. 단 음식, 밥/면/빵 등 탄수화물이 높은 음식 주의.",
   },
   {
     id: "dyslipidemia",
     name: "고지혈증",
-    description: "혈중 지질 수치가 높은 상태",
-    concerns: "포화지방과 콜레스테롤이 높으면 위험",
+    description: "포화지방과 콜레스테롤을 제한해야 하는 질환. 기름진 음식, 튀김, 고기 기름 등이 위험함.",
   },
   {
     id: "obesity",
     name: "비만",
-    description: "체질량지수가 높은 상태",
-    concerns: "칼로리와 지방이 높으면 위험",
+    description: "전체 칼로리와 지방 섭취를 제한해야 하는 상태. 고칼로리 음식, 기름진 음식 주의.",
   },
   {
     id: "kidney",
     name: "신장질환",
-    description: "신장 기능이 저하된 상태",
-    concerns: "나트륨, 칼륨, 인이 높으면 위험",
+    description: "나트륨, 칼륨, 인 섭취를 제한해야 하는 질환. 짠 음식, 과일, 견과류, 유제품 등 주의.",
   },
   {
     id: "liver",
     name: "간질환",
-    description: "간 기능이 저하된 상태",
-    concerns: "지방과 알코올이 많으면 위험",
+    description: "지방 섭취를 제한하고 알코올을 피해야 하는 질환. 기름진 음식, 술 등이 위험함.",
   },
   {
     id: "gout",
     name: "통풍",
-    description: "요산이 과다하게 축적되는 상태",
-    concerns: "퓨린 함량이 높으면 위험",
+    description: "퓨린 함량이 높은 음식을 피해야 하는 질환. 내장, 등푸른 생선, 육수 등이 위험함.",
   },
 ];
 
