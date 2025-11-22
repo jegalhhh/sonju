@@ -34,21 +34,36 @@ async function loadModels(): Promise<void> {
     return;
   }
 
-  console.log("Loading ONNX models...");
+  console.log("Loading ONNX models from Storage...");
+
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+  if (!SUPABASE_URL) {
+    throw new Error("SUPABASE_URL not configured");
+  }
 
   try {
-    // Load scaler parameters
-    const scalerPath = new URL("../_shared/models/scaler.json", import.meta.url).pathname;
-    const scalerText = await Deno.readTextFile(scalerPath);
+    // Load scaler parameters from Storage
+    const scalerUrl = `${SUPABASE_URL}/storage/v1/object/public/ml-models/scaler.json`;
+    console.log("Loading scaler from:", scalerUrl);
+    const scalerResponse = await fetch(scalerUrl);
+    if (!scalerResponse.ok) {
+      throw new Error(`Failed to load scaler: ${scalerResponse.status} ${scalerResponse.statusText}`);
+    }
+    const scalerText = await scalerResponse.text();
     modelCache.scaler = JSON.parse(scalerText);
     console.log("Scaler loaded");
 
-    // Load models
+    // Load ONNX models from Storage
     const modelNames = ["dm", "ht", "hlip", "osas"];
     for (const name of modelNames) {
-      const modelPath = new URL(`../_shared/models/model_${name}.onnx`, import.meta.url).pathname;
-      const modelBuffer = await Deno.readFile(modelPath);
-      modelCache[name as keyof Omit<ModelCache, "scaler">] = await ort.InferenceSession.create(modelBuffer);
+      const modelUrl = `${SUPABASE_URL}/storage/v1/object/public/ml-models/model_${name}.onnx`;
+      console.log(`Loading model ${name} from:`, modelUrl);
+      const response = await fetch(modelUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to load model ${name}: ${response.status} ${response.statusText}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      modelCache[name as keyof Omit<ModelCache, "scaler">] = await ort.InferenceSession.create(new Uint8Array(arrayBuffer));
       console.log(`Model ${name} loaded`);
     }
 
