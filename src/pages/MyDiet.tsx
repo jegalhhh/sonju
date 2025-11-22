@@ -83,12 +83,26 @@ const MyDiet = () => {
       setLoading(false);
     }
   };
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, imageUrl: string) => {
     try {
-      const {
-        error
-      } = await supabase.from("food_logs").delete().eq("id", id);
+      // Extract file path from image URL
+      const filePath = imageUrl.split("/object/public/food-images/")[1];
+      
+      // Delete image from storage
+      if (filePath) {
+        const { error: storageError } = await supabase.storage
+          .from("food-images")
+          .remove([filePath]);
+        
+        if (storageError) {
+          console.error("Storage deletion error:", storageError);
+        }
+      }
+
+      // Delete record from database
+      const { error } = await supabase.from("food_logs").delete().eq("id", id);
       if (error) throw error;
+      
       setFoodLogs(foodLogs.filter(log => log.id !== id));
       toast({
         title: "삭제 완료",
@@ -172,7 +186,7 @@ const MyDiet = () => {
                       })}
                           </p>
                         </div>
-                        <Button variant="destructive" size="icon" onClick={() => handleDelete(log.id)}>
+                        <Button variant="destructive" size="icon" onClick={() => handleDelete(log.id, log.image_url)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
