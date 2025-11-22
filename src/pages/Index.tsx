@@ -48,6 +48,13 @@ const Index = () => {
   const [riskLevel, setRiskLevel] = useState<string>("");
   const [riskComment, setRiskComment] = useState<string>("");
   const [calories, setCalories] = useState<string>("");
+  const [protein, setProtein] = useState<string>("");
+  const [fat, setFat] = useState<string>("");
+  const [carbs, setCarbs] = useState<string>("");
+  const [sugar, setSugar] = useState<string>("");
+  const [sodium, setSodium] = useState<string>("");
+  const [calcium, setCalcium] = useState<string>("");
+  const [vitaminC, setVitaminC] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -211,6 +218,13 @@ const Index = () => {
         setRiskLevel(functionData.risk_level || "");
         setRiskComment(functionData.risk_comment || "");
         setCalories(functionData.calories || "");
+        setProtein(functionData.protein || "");
+        setFat(functionData.fat || "");
+        setCarbs(functionData.carbs || "");
+        setSugar(functionData.sugar || "");
+        setSodium(functionData.sodium || "");
+        setCalcium(functionData.calcium || "");
+        setVitaminC(functionData.vitamin_c || "");
         toast.success("분석 완료!");
       } else {
         setResult("결과를 확인할 수 없습니다.");
@@ -234,6 +248,13 @@ const Index = () => {
     setRiskLevel("");
     setRiskComment("");
     setCalories("");
+    setProtein("");
+    setFat("");
+    setCarbs("");
+    setSugar("");
+    setSodium("");
+    setCalcium("");
+    setVitaminC("");
     setError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -285,7 +306,7 @@ const Index = () => {
         }
       } = supabase.storage.from('food-images').getPublicUrl(fileName);
 
-      // 4. Save to database with permanent URL
+      // 4. Save to database with permanent URL and nutrition data
       const {
         error
       } = await supabase.from("food_logs").insert({
@@ -293,7 +314,14 @@ const Index = () => {
         image_url: publicUrl,
         calories: calories || null,
         risk_level: riskLevel || null,
-        risk_comment: riskComment || null
+        risk_comment: riskComment || null,
+        protein: protein || null,
+        fat: fat || null,
+        carbs: carbs || null,
+        sugar: sugar || null,
+        sodium: sodium || null,
+        calcium: calcium || null,
+        vitamin_c: vitaminC || null,
       });
       if (error) throw error;
       toast.success("식단 기록이 저장되었습니다!");

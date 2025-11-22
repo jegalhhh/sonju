@@ -71,17 +71,31 @@ Deno.serve(async (req) => {
 
 ${diseasePrompt}
 
-출력 형식은 반드시 아래 예시처럼 세 줄만 사용해.
+출력 형식은 반드시 아래 예시처럼 정확히 아홉 줄만 사용해.
 예시:
 음식: 된장찌개
 위험도: 주의 - 고혈압 환자의 경우 나트륨 함량이 높을 수 있습니다.
-칼로리: 약 550 kcal
+칼로리: 550
+단백질: 25
+지방: 15
+탄수화물: 45
+당: 8
+나트륨: 1200
+칼슘: 150
+비타민C: 10
 
 규칙:
 1) 첫 줄에는 위 음식 리스트 중 하나의 이름 또는 '해당 사항 없음'만 쓴다.
 2) 둘째 줄에는 '위험도: 안전|주의|위험 - 이유' 형식으로 쓴다.
-3) 셋째 줄에는 '칼로리: 대략적인 kcal 값'을 한 줄로 쓴다.
-4) 다른 줄이나 설명은 추가로 쓰지 마라.`;
+3) 셋째 줄: '칼로리: 숫자' (kcal, 단위 없이 숫자만)
+4) 넷째 줄: '단백질: 숫자' (g, 단위 없이 숫자만)
+5) 다섯째 줄: '지방: 숫자' (g, 단위 없이 숫자만)
+6) 여섯째 줄: '탄수화물: 숫자' (g, 단위 없이 숫자만)
+7) 일곱째 줄: '당: 숫자' (g, 단위 없이 숫자만)
+8) 여덟째 줄: '나트륨: 숫자' (mg, 단위 없이 숫자만)
+9) 아홉째 줄: '칼슘: 숫자' (mg, 단위 없이 숫자만)
+10) 열째 줄: '비타민C: 숫자' (mg, 단위 없이 숫자만)
+11) 다른 줄이나 설명은 추가로 쓰지 마라.`;
 
     console.log("OpenAI Vision API 호출 시작...");
 
@@ -146,6 +160,25 @@ ${diseasePrompt}
     let riskLevel = "";
     let riskComment = "";
     let calories = "";
+    let protein = "";
+    let fat = "";
+    let carbs = "";
+    let sugar = "";
+    let sodium = "";
+    let calcium = "";
+    let vitaminC = "";
+
+    // Helper function to extract value from line
+    const extractValue = (keyword: string) => {
+      const line = lines.find((l: string) => l.includes(`${keyword}:`));
+      if (line) {
+        return line
+          .replace(`${keyword}:`, "")
+          .replace(/^\d+줄:\s*/i, "")
+          .trim();
+      }
+      return "";
+    };
 
     // 첫 번째 줄에서 음식 추출
     const foodLine = lines.find((line: string) => line.includes("음식:"));
@@ -174,15 +207,15 @@ ${diseasePrompt}
       }
     }
 
-    // 세 번째 줄에서 칼로리 추출
-    const caloriesLine = lines.find((line: string) => line.includes("칼로리:"));
-    if (caloriesLine) {
-      calories = caloriesLine
-        .replace("칼로리:", "")
-        .replace(/^\d+줄:\s*/i, "")
-        .replace(/^셋.*줄:\s*/i, "")
-        .trim();
-    }
+    // Extract nutrition values
+    calories = extractValue("칼로리");
+    protein = extractValue("단백질");
+    fat = extractValue("지방");
+    carbs = extractValue("탄수화물");
+    sugar = extractValue("당");
+    sodium = extractValue("나트륨");
+    calcium = extractValue("칼슘");
+    vitaminC = extractValue("비타민C");
 
     if (!food) {
       console.error("음식 이름을 파싱할 수 없습니다.");
@@ -192,7 +225,19 @@ ${diseasePrompt}
       });
     }
 
-    console.log("분석 완료:", { food, riskLevel, riskComment, calories });
+    console.log("분석 완료:", { 
+      food, 
+      riskLevel, 
+      riskComment, 
+      calories,
+      protein,
+      fat,
+      carbs,
+      sugar,
+      sodium,
+      calcium,
+      vitaminC
+    });
 
     return new Response(
       JSON.stringify({
@@ -200,6 +245,13 @@ ${diseasePrompt}
         risk_level: riskLevel,
         risk_comment: riskComment,
         calories,
+        protein,
+        fat,
+        carbs,
+        sugar,
+        sodium,
+        calcium,
+        vitamin_c: vitaminC,
         raw: rawText,
       }),
       {
