@@ -34,15 +34,6 @@ const Landing = () => {
             </p>
           </div>
 
-          {/* 시작하기 버튼 */}
-          <Button
-            onClick={() => navigate("/analyze")}
-            size="lg"
-            className="w-full lg:w-auto px-12 py-6 text-xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]"
-          >
-            🍽️ 시작하기
-          </Button>
-
           {/* 음식 갤러리 */}
           <div className="flex gap-4 justify-center lg:justify-start">
             {[
