@@ -33,26 +33,9 @@ const Landing = () => {
           >
             🍽️ 시작하기
           </Button>
-        </div>
-
-        {/* 오른쪽: 패드 목업 */}
-        <div className="flex-shrink-0 w-full lg:w-1/2 flex flex-col gap-8 justify-center">
-          {/* 패드 목업 */}
-          <div className="relative w-full h-[calc(100vh-16rem)]">
-            {/* 화면 영역 (테두리 없이) */}
-            <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
-              {/* 실제 작동하는 앱 화면 */}
-              <iframe 
-                src="/analyze" 
-                className="w-full h-full border-0"
-                sandbox="allow-scripts allow-same-origin allow-forms"
-                title="앱 미리보기"
-              />
-            </div>
-          </div>
 
           {/* 음식 갤러리 */}
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center lg:justify-start">
             {[
               { img: "/food-1.jpg", label: "🍤 튀김" },
               { img: "/food-2.jpeg", label: "🍲 찌개" },
@@ -60,7 +43,7 @@ const Landing = () => {
             ].map((food, idx) => (
               <div 
                 key={idx}
-                className="group relative w-32 h-32 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                className="group relative w-28 h-28 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
               >
                 <img 
                   src={food.img} 
@@ -72,6 +55,22 @@ const Landing = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* 오른쪽: 패드 목업 */}
+        <div className="flex-shrink-0 w-full lg:w-1/2 flex justify-center">
+          <div className="relative w-full h-[calc(100vh-8rem)]">
+            {/* 화면 영역 (테두리 없이) */}
+            <div className="relative w-full h-full bg-white rounded-2xl overflow-hidden shadow-2xl">
+              {/* 실제 작동하는 앱 화면 */}
+              <iframe 
+                src="/analyze" 
+                className="w-full h-full border-0"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                title="앱 미리보기"
+              />
+            </div>
           </div>
         </div>
       </div>
