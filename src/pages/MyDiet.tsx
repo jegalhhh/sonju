@@ -128,28 +128,53 @@ const MyDiet = () => {
       </header>
 
       <main className="container mx-auto py-8 px-4 max-w-4xl">
-        {dailyCalories && <Card className="mb-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+        {dailyCalories && <Card className={`mb-8 ${
+          caloriePercentage > 100 
+            ? "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/30 border-red-300 dark:border-red-800" 
+            : "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20"
+        }`}>
             <CardContent className="p-6">
-              <h2 className="text-xl font-bold mb-4 text-primary">하루 권장 칼로리</h2>
+              <h2 className={`text-xl font-bold mb-4 ${
+                caloriePercentage > 100 ? "text-red-600 dark:text-red-400" : "text-primary"
+              }`}>하루 권장 칼로리</h2>
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-lg">
                   <span className="font-medium">권장 칼로리:</span>
-                  <span className="font-bold text-primary">{dailyCalories} kcal</span>
+                  <span className={`font-bold ${
+                    caloriePercentage > 100 ? "text-red-600 dark:text-red-400" : "text-primary"
+                  }`}>{dailyCalories} kcal</span>
                 </div>
                 <div className="flex justify-between items-center text-lg">
                   <span className="font-medium">섭취 칼로리:</span>
-                  <span className="font-bold">{consumedCalories} kcal</span>
+                  <span className={`font-bold ${
+                    caloriePercentage > 100 ? "text-red-700 dark:text-red-300" : ""
+                  }`}>{consumedCalories} kcal</span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">달성률</span>
-                    <span className="text-2xl font-bold text-primary">{caloriePercentage}%</span>
+                    <span className={`text-2xl font-bold ${
+                      caloriePercentage > 100 ? "text-red-600 dark:text-red-400 animate-pulse" : "text-primary"
+                    }`}>{caloriePercentage}%</span>
                   </div>
-                  <Progress value={caloriePercentage} className="h-4" />
+                  <Progress 
+                    value={caloriePercentage} 
+                    className={`h-4 ${
+                      caloriePercentage > 100 ? "[&>div]:bg-red-500 dark:[&>div]:bg-red-600" : ""
+                    }`} 
+                  />
                 </div>
-                {caloriePercentage >= 100 && <p className="text-sm text-center text-muted-foreground mt-2">
+                {caloriePercentage > 100 ? (
+                  <div className="bg-red-100 dark:bg-red-900/40 border-2 border-red-400 dark:border-red-700 rounded-lg p-4 animate-fade-in">
+                    <p className="text-center font-bold text-red-700 dark:text-red-300 text-lg">
+                      ⚠️ 권장 칼로리를 초과했습니다! 식사량을 조절해주세요.
+                    </p>
+                  </div>
+                ) : caloriePercentage >= 100 && (
+                  <p className="text-sm text-center text-muted-foreground mt-2">
                     🎉 오늘 권장 칼로리를 달성했습니다!
-                  </p>}
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>}
