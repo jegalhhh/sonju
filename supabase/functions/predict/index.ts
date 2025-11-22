@@ -1,4 +1,4 @@
-import { DISEASES } from "../_shared/diseases.ts";
+import { DISEASES_MAP } from "../_shared/diseases.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     if (diseases.length > 0) {
       const diseaseDescriptions = diseases
         .map((id) => {
-          const disease = DISEASES.find(item => item.id === id);
+          const disease = DISEASES_MAP.get(id);
           return disease ? `${disease.name} (${disease.concerns})` : id;
         })
         .join(", ");
