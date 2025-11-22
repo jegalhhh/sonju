@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useUserInfo } from "@/contexts/UserInfoContext";
-
 interface FoodLog {
   id: string;
   food_name: string;
@@ -17,27 +16,33 @@ interface FoodLog {
   risk_comment: string | null;
   created_at: string;
 }
-
 const MyDiet = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { userInfo } = useUserInfo();
+  const {
+    toast
+  } = useToast();
+  const {
+    userInfo
+  } = useUserInfo();
   const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Calculate BMR using Harris-Benedict equation
   const calculateDailyCalories = () => {
     if (!userInfo) return null;
-    
-    const { age, gender, height, weight } = userInfo;
+    const {
+      age,
+      gender,
+      height,
+      weight
+    } = userInfo;
     let bmr: number;
-    
     if (gender === "male") {
-      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+      bmr = 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
     } else {
-      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+      bmr = 447.593 + 9.247 * weight + 3.098 * height - 4.330 * age;
     }
-    
+
     // Apply activity factor for elderly (1.3)
     return Math.round(bmr * 1.3);
   };
@@ -51,24 +56,20 @@ const MyDiet = () => {
       return total + (match ? parseInt(match[1]) : 0);
     }, 0);
   };
-
   const dailyCalories = calculateDailyCalories();
   const consumedCalories = calculateConsumedCalories();
-  const caloriePercentage = dailyCalories 
-    ? Math.min(Math.round((consumedCalories / dailyCalories) * 100), 100)
-    : 0;
-
+  const caloriePercentage = dailyCalories ? Math.min(Math.round(consumedCalories / dailyCalories * 100), 100) : 0;
   useEffect(() => {
     loadFoodLogs();
   }, []);
-
   const loadFoodLogs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("food_logs")
-        .select("*")
-        .order("created_at", { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from("food_logs").select("*").order("created_at", {
+        ascending: false
+      });
       if (error) throw error;
       setFoodLogs(data || []);
     } catch (error) {
@@ -76,56 +77,44 @@ const MyDiet = () => {
       toast({
         title: "오류",
         description: "식단 기록을 불러오는데 실패했습니다.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
-
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from("food_logs")
-        .delete()
-        .eq("id", id);
-
+      const {
+        error
+      } = await supabase.from("food_logs").delete().eq("id", id);
       if (error) throw error;
-
-      setFoodLogs(foodLogs.filter((log) => log.id !== id));
+      setFoodLogs(foodLogs.filter(log => log.id !== id));
       toast({
         title: "삭제 완료",
-        description: "식단 기록이 삭제되었습니다.",
+        description: "식단 기록이 삭제되었습니다."
       });
     } catch (error) {
       console.error("Error deleting food log:", error);
       toast({
         title: "오류",
         description: "식단 기록 삭제에 실패했습니다.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <header className="bg-primary text-primary-foreground py-6 px-4 shadow-md">
         <div className="container mx-auto flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/analyze")}
-            className="text-primary-foreground hover:bg-primary-foreground/20"
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigate("/analyze")} className="text-primary-foreground hover:bg-primary-foreground/20">
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <h1 className="text-2xl font-bold">내 식단 기록</h1>
+          <h1 className="font-bold text-xl">내 식단 기록</h1>
         </div>
       </header>
 
       <main className="container mx-auto py-8 px-4 max-w-4xl">
-        {dailyCalories && (
-          <Card className="mb-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+        {dailyCalories && <Card className="mb-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
             <CardContent className="p-6">
               <h2 className="text-xl font-bold mb-4 text-primary">하루 권장 칼로리</h2>
               <div className="space-y-4">
@@ -144,44 +133,28 @@ const MyDiet = () => {
                   </div>
                   <Progress value={caloriePercentage} className="h-4" />
                 </div>
-                {caloriePercentage >= 100 && (
-                  <p className="text-sm text-center text-muted-foreground mt-2">
+                {caloriePercentage >= 100 && <p className="text-sm text-center text-muted-foreground mt-2">
                     🎉 오늘 권장 칼로리를 달성했습니다!
-                  </p>
-                )}
+                  </p>}
               </div>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
-        {loading ? (
-          <div className="text-center py-12">
+        {loading ? <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">불러오는 중...</p>
-          </div>
-        ) : foodLogs.length === 0 ? (
-          <div className="text-center py-12">
+          </div> : foodLogs.length === 0 ? <div className="text-center py-12">
             <p className="text-lg text-muted-foreground">
               저장된 식단 기록이 없습니다.
             </p>
-            <Button
-              onClick={() => navigate("/")}
-              className="mt-4"
-            >
+            <Button onClick={() => navigate("/")} className="mt-4">
               음식 분석하러 가기
             </Button>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {foodLogs.map((log) => (
-              <Card key={log.id} className="overflow-hidden">
+          </div> : <div className="space-y-6">
+            {foodLogs.map(log => <Card key={log.id} className="overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex flex-row gap-6">
                     <div className="flex-shrink-0">
-                      <img
-                        src={log.image_url}
-                        alt={log.food_name}
-                        className="w-full md:w-48 h-48 object-cover rounded-lg"
-                      />
+                      <img src={log.image_url} alt={log.food_name} className="w-full md:w-48 h-48 object-cover rounded-lg" />
                     </div>
                     <div className="flex-1 space-y-4">
                       <div className="flex justify-between items-start">
@@ -191,80 +164,46 @@ const MyDiet = () => {
                           </h3>
                           <p className="text-sm text-muted-foreground">
                             {new Date(log.created_at).toLocaleDateString("ko-KR", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
                           </p>
                         </div>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => handleDelete(log.id)}
-                        >
+                        <Button variant="destructive" size="icon" onClick={() => handleDelete(log.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
 
-                      {log.calories && (
-                        <div>
+                      {log.calories && <div>
                           <p className="text-lg font-medium">
                             칼로리: {log.calories}
                           </p>
-                        </div>
-                      )}
+                        </div>}
 
-                      {log.risk_level && (
-                        <div
-                          className={`p-4 rounded-lg border-2 ${
-                            log.risk_level === "안전"
-                              ? "bg-green-50 dark:bg-green-950/20 border-green-500"
-                              : log.risk_level === "위험"
-                              ? "bg-red-50 dark:bg-red-950/20 border-red-500"
-                              : "bg-yellow-50 dark:bg-yellow-950/20 border-yellow-500"
-                          }`}
-                        >
+                      {log.risk_level && <div className={`p-4 rounded-lg border-2 ${log.risk_level === "안전" ? "bg-green-50 dark:bg-green-950/20 border-green-500" : log.risk_level === "위험" ? "bg-red-50 dark:bg-red-950/20 border-red-500" : "bg-yellow-50 dark:bg-yellow-950/20 border-yellow-500"}`}>
                           <div className="flex items-start gap-3">
                             <div className="text-2xl">
-                              {log.risk_level === "안전"
-                                ? "🟢"
-                                : log.risk_level === "위험"
-                                ? "🔴"
-                                : "🟡"}
+                              {log.risk_level === "안전" ? "🟢" : log.risk_level === "위험" ? "🔴" : "🟡"}
                             </div>
                             <div>
-                              <h4
-                                className={`font-bold mb-1 ${
-                                  log.risk_level === "안전"
-                                    ? "text-green-700 dark:text-green-300"
-                                    : log.risk_level === "위험"
-                                    ? "text-red-700 dark:text-red-300"
-                                    : "text-yellow-700 dark:text-yellow-300"
-                                }`}
-                              >
+                              <h4 className={`font-bold mb-1 ${log.risk_level === "안전" ? "text-green-700 dark:text-green-300" : log.risk_level === "위험" ? "text-red-700 dark:text-red-300" : "text-yellow-700 dark:text-yellow-300"}`}>
                                 {log.risk_level}
                               </h4>
-                              {log.risk_comment && (
-                                <p className="text-sm text-foreground/90">
+                              {log.risk_comment && <p className="text-foreground/90 text-xs">
                                   {log.risk_comment}
-                                </p>
-                              )}
+                                </p>}
                             </div>
                           </div>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+              </Card>)}
+          </div>}
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default MyDiet;
