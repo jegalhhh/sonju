@@ -44,6 +44,7 @@ const Index = () => {
   const [calories, setCalories] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load disease metadata
@@ -94,6 +95,40 @@ const Index = () => {
 
   const handleUploadAreaClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        handleFileSelect(file);
+        toast.success("이미지가 업로드되었습니다!");
+      } else {
+        toast.error("이미지 파일만 업로드 가능합니다.");
+      }
+    }
   };
 
   const handleAnalyze = async () => {
@@ -453,13 +488,19 @@ const Index = () => {
             {/* Image Upload Area */}
             <div
               onClick={handleUploadAreaClick}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
               className={`
                 relative w-full rounded-xl border-2 border-dashed
                 flex items-center justify-center cursor-pointer
                 transition-all duration-300 overflow-hidden
                 ${previewUrl ? 'min-h-[400px] max-h-[600px]' : 'min-h-[400px]'}
                 ${
-                  previewUrl
+                  isDragging
+                    ? "border-primary bg-primary/20 scale-[1.02] shadow-2xl"
+                    : previewUrl
                     ? "border-primary bg-primary/5 shadow-inner"
                     : "border-upload-border bg-upload-bg hover:border-primary hover:bg-primary/10 hover:shadow-lg"
                 }
