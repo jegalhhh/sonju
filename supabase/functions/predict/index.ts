@@ -1,16 +1,8 @@
+import { DISEASES } from "../_shared/diseases.ts";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-const DISEASE_INFO: Record<string, { name: string; concerns: string }> = {
-  htn: { name: "고혈압", concerns: "나트륨 함량이 높으면 위험" },
-  dm: { name: "당뇨병", concerns: "당분과 탄수화물 함량이 높으면 위험" },
-  dyslipidemia: { name: "고지혈증", concerns: "포화지방과 콜레스테롤이 높으면 위험" },
-  obesity: { name: "비만", concerns: "칼로리와 지방이 높으면 위험" },
-  kidney: { name: "신장질환", concerns: "나트륨, 칼륨, 인이 높으면 위험" },
-  liver: { name: "간질환", concerns: "지방과 알코올이 많으면 위험" },
-  gout: { name: "통풍", concerns: "퓨린 함량이 높으면 위험" },
 };
 
 Deno.serve(async (req) => {
@@ -53,8 +45,8 @@ Deno.serve(async (req) => {
     if (diseases.length > 0) {
       const diseaseDescriptions = diseases
         .map((id) => {
-          const info = DISEASE_INFO[id];
-          return info ? `${info.name} (${info.concerns})` : id;
+          const disease = DISEASES.find(item => item.id === id);
+          return disease ? `${disease.name} (${disease.concerns})` : id;
         })
         .join(", ");
       diseasePrompt = `\n\n사용자는 다음 질병을 가지고 있습니다: ${diseaseDescriptions}\n이 질환들을 고려해서 이 음식이 얼마나 위험한지 평가해주세요.`;
