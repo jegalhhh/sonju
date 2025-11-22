@@ -182,17 +182,36 @@ const Index = () => {
   };
 
   const handleSave = async () => {
-    if (!result || !previewUrl) {
+    if (!result || !file) {
       toast.error("저장할 분석 결과가 없습니다.");
       return;
     }
 
     try {
+      // 1. Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      
+      // 2. Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('food-images')
+        .upload(fileName, file);
+      
+      if (uploadError) throw uploadError;
+      
+      // 3. Get public URL
+      const { data: { publicUrl } } = supabase
+        .storage
+        .from('food-images')
+        .getPublicUrl(fileName);
+      
+      // 4. Save to database with permanent URL
       const { error } = await supabase
         .from("food_logs")
         .insert({
           food_name: result,
-          image_url: previewUrl,
+          image_url: publicUrl,
           calories: calories || null,
           risk_level: riskLevel || null,
           risk_comment: riskComment || null,
