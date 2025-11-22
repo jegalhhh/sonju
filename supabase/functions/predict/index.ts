@@ -43,15 +43,23 @@ Deno.serve(async (req) => {
     // 질병 정보 프롬프트 생성
     let diseasePrompt = "";
     if (diseases.length > 0) {
-      const diseaseDescriptions = diseases
+      const diseaseNames = diseases
         .map((id) => {
           const disease = DISEASES_MAP.get(id);
-          return disease ? `${disease.name} (${disease.concerns})` : id;
+          return disease ? disease.name : id;
         })
         .join(", ");
-      diseasePrompt = `\n\n사용자는 다음 질병을 가지고 있습니다: ${diseaseDescriptions}\n이 질환들을 고려해서 이 음식이 얼마나 위험한지 평가해주세요.`;
+      
+      const diseaseDetails = diseases
+        .map((id) => {
+          const disease = DISEASES_MAP.get(id);
+          return disease ? `${disease.name}: ${disease.description}` : id;
+        })
+        .join("; ");
+      
+      diseasePrompt = `\n\n사용자는 다음과 같은 질환을 가지고 있습니다: ${diseaseNames}. 각 질환에 대한 요약 설명은 다음과 같습니다: ${diseaseDetails}\n\n이 질환들을 고려하여 음식의 건강 위험도를 평가하세요.`;
     } else {
-      diseasePrompt = "\n\n사용자는 특별한 질병이 없습니다. 일반적인 건강 측면에서 평가해주세요.";
+      diseasePrompt = "\n\n사용자에게 알려진 만성 질환 정보는 없습니다.";
     }
 
     const prompt = `이 이미지에 있는 음식을 아래 리스트에서 찾아주세요.
@@ -63,14 +71,17 @@ Deno.serve(async (req) => {
 
 **중요:** 리스트에 정확히 일치하는 음식이 없으면 반드시 '해당 사항 없음'이라고만 답하세요.${diseasePrompt}
 
-**출력 형식 (정확히 두 줄만, 다른 텍스트 절대 금지):**
-음식: <음식 이름 또는 '해당 사항 없음'>
-위험도: 안전|주의|위험 - 이유
+**출력 형식은 반드시 아래 예시처럼 세 줄만 사용해:**
+예시:
+음식: 된장찌개
+위험도: 주의 - 고혈압 환자의 경우 나트륨 함량이 높을 수 있습니다.
+칼로리: 약 550 kcal
 
 **규칙:**
-1) 첫 줄: "음식: " 뒤에 리스트의 정확한 음식 이름 하나 또는 '해당 사항 없음'만 쓴다. "1줄:", "첫째 줄:" 같은 텍스트는 절대 쓰지 않는다.
-2) 둘째 줄: "위험도: " 뒤에 안전/주의/위험 중 하나와 " - " 뒤에 이유를 쓴다. "2줄:", "둘째 줄:" 같은 텍스트는 절대 쓰지 않는다.
-3) 다른 줄이나 설명은 추가하지 않는다.`;
+1) 첫 줄에는 위 음식 리스트 중 하나의 이름 또는 '해당 사항 없음'만 쓴다.
+2) 둘째 줄에는 '위험도: 안전|주의|위험 - 이유' 형식으로 쓴다.
+3) 셋째 줄에는 '칼로리: 대략적인 kcal 값'을 한 줄로 쓴다.
+4) 다른 줄이나 설명은 추가로 쓰지 마라.`;
 
     console.log("OpenAI Vision API 호출 시작...");
 
@@ -134,24 +145,25 @@ Deno.serve(async (req) => {
     let food = "";
     let riskLevel = "";
     let riskComment = "";
+    let calories = "";
 
-    // 첫 번째 줄에서 음식 추출 (불필요한 텍스트 제거)
+    // 첫 번째 줄에서 음식 추출
     const foodLine = lines.find((line: string) => line.includes("음식:"));
     if (foodLine) {
       food = foodLine
         .replace("음식:", "")
-        .replace(/^\d+줄:\s*/i, "") // "1줄:", "2줄:" 등 제거
-        .replace(/^첫.*줄:\s*/i, "") // "첫 줄:", "첫째 줄:" 등 제거
+        .replace(/^\d+줄:\s*/i, "")
+        .replace(/^첫.*줄:\s*/i, "")
         .trim();
     }
 
-    // 두 번째 줄에서 위험도 추출 (불필요한 텍스트 제거)
+    // 두 번째 줄에서 위험도 추출
     const riskLine = lines.find((line: string) => line.includes("위험도:"));
     if (riskLine) {
       const riskPart = riskLine
         .replace("위험도:", "")
-        .replace(/^\d+줄:\s*/i, "") // "1줄:", "2줄:" 등 제거
-        .replace(/^둘.*줄:\s*/i, "") // "둘째 줄:" 등 제거
+        .replace(/^\d+줄:\s*/i, "")
+        .replace(/^둘.*줄:\s*/i, "")
         .trim();
       const dashIndex = riskPart.indexOf("-");
       if (dashIndex !== -1) {
@@ -162,6 +174,16 @@ Deno.serve(async (req) => {
       }
     }
 
+    // 세 번째 줄에서 칼로리 추출
+    const caloriesLine = lines.find((line: string) => line.includes("칼로리:"));
+    if (caloriesLine) {
+      calories = caloriesLine
+        .replace("칼로리:", "")
+        .replace(/^\d+줄:\s*/i, "")
+        .replace(/^셋.*줄:\s*/i, "")
+        .trim();
+    }
+
     if (!food) {
       console.error("음식 이름을 파싱할 수 없습니다.");
       return new Response(JSON.stringify({ detail: "OpenAI 응답에서 결과를 찾지 못했습니다." }), {
@@ -170,13 +192,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    console.log("분석 완료:", { food, riskLevel, riskComment });
+    console.log("분석 완료:", { food, riskLevel, riskComment, calories });
 
     return new Response(
       JSON.stringify({
         food,
         risk_level: riskLevel,
         risk_comment: riskComment,
+        calories,
         raw: rawText,
       }),
       {

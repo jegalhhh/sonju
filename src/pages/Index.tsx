@@ -20,7 +20,9 @@ const Index = () => {
 
   // Personal info
   const [age, setAge] = useState<string>("");
-  const [bmi, setBmi] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [height, setHeight] = useState<string>("");
+  const [weight, setWeight] = useState<string>("");
   const [hidePersonal, setHidePersonal] = useState(false);
 
   // Disease selection
@@ -33,6 +35,7 @@ const Index = () => {
   const [result, setResult] = useState<string>("");
   const [riskLevel, setRiskLevel] = useState<string>("");
   const [riskComment, setRiskComment] = useState<string>("");
+  const [calories, setCalories] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,6 +77,7 @@ const Index = () => {
     setResult("");
     setRiskLevel("");
     setRiskComment("");
+    setCalories("");
     setError("");
   };
 
@@ -98,6 +102,7 @@ const Index = () => {
     setResult("");
     setRiskLevel("");
     setRiskComment("");
+    setCalories("");
 
     try {
       const formData = new FormData();
@@ -122,6 +127,7 @@ const Index = () => {
         setResult(functionData.food);
         setRiskLevel(functionData.risk_level || "");
         setRiskComment(functionData.risk_comment || "");
+        setCalories(functionData.calories || "");
         toast.success("분석 완료!");
       } else {
         setResult("결과를 확인할 수 없습니다.");
@@ -145,6 +151,7 @@ const Index = () => {
     setResult("");
     setRiskLevel("");
     setRiskComment("");
+    setCalories("");
     setError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -152,8 +159,8 @@ const Index = () => {
   };
 
   const handleProceedToAnalyze = () => {
-    if (!age || !bmi) {
-      toast.error("나이와 BMI를 입력해주세요.");
+    if (!age || !gender || !height || !weight) {
+      toast.error("모든 건강 정보를 입력해주세요.");
       return;
     }
     setStep("analyze");
@@ -199,35 +206,68 @@ const Index = () => {
         <main className="flex-1 flex items-center justify-center px-4 pb-12">
           <Card className="w-full max-w-2xl shadow-2xl border-2 bg-card/95 backdrop-blur">
             <CardContent className="p-10 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="age" className="text-lg font-semibold">
-                  나이
-                </Label>
-                <Input
-                  id="age"
-                  type="number"
-                  min="0"
-                  placeholder="예: 35"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  className="h-12 text-base"
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="age" className="text-lg font-semibold">
+                    나이
+                  </Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    min="0"
+                    placeholder="예: 35"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="bmi" className="text-lg font-semibold">
-                  BMI
-                </Label>
-                <Input
-                  id="bmi"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  placeholder="예: 23.4"
-                  value={bmi}
-                  onChange={(e) => setBmi(e.target.value)}
-                  className="h-12 text-base"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="gender" className="text-lg font-semibold">
+                    성별
+                  </Label>
+                  <select
+                    id="gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full h-12 px-3 rounded-md border-2 border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring text-base"
+                  >
+                    <option value="">선택하세요</option>
+                    <option value="male">남성</option>
+                    <option value="female">여성</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="height" className="text-lg font-semibold">
+                    키 (cm)
+                  </Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    min="0"
+                    placeholder="예: 170"
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="weight" className="text-lg font-semibold">
+                    체중 (kg)
+                  </Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="예: 65.5"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    className="h-12 text-base"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -257,7 +297,7 @@ const Index = () => {
 
               <Button
                 onClick={handleProceedToAnalyze}
-                disabled={!age || !bmi}
+                disabled={!age || !gender || !height || !weight}
                 className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] mt-8"
               >
                 🍽️ 식단 체크하기
@@ -297,10 +337,16 @@ const Index = () => {
                     {!hidePersonal ? (
                       <div className="space-y-1">
                         <p className="text-base font-medium text-foreground">
-                          <span className="font-semibold">나이:</span> {age || "-"}세
+                          <span className="font-semibold">나이:</span> {age || "-"}
                         </p>
                         <p className="text-base font-medium text-foreground">
-                          <span className="font-semibold">BMI:</span> {bmi || "-"}
+                          <span className="font-semibold">성별:</span> {gender === "male" ? "남성" : gender === "female" ? "여성" : "-"}
+                        </p>
+                        <p className="text-base font-medium text-foreground">
+                          <span className="font-semibold">키:</span> {height ? `${height}cm` : "-"}
+                        </p>
+                        <p className="text-base font-medium text-foreground">
+                          <span className="font-semibold">체중:</span> {weight ? `${weight}kg` : "-"}
                         </p>
                         <p className="text-base font-medium text-foreground">
                           <span className="font-semibold">질병:</span> {getSelectedDiseaseNames()}
@@ -424,10 +470,15 @@ const Index = () => {
                           위험도: {riskLevel}{riskComment && ` - ${riskComment}`}
                         </p>
                       )}
+                      {calories && (
+                        <p className="text-lg font-medium text-foreground">
+                          대략적인 칼로리: {calories}
+                        </p>
+                      )}
                     </>
                   ) : (
                     <p className="text-muted-foreground text-lg italic">
-                      분석 결과가 여기에 표시됩니다...
+                      분석 결과가 여기에 표시됩니다.
                     </p>
                   )}
                 </div>
