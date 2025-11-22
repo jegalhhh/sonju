@@ -26,25 +26,13 @@ const Landing = () => {
               
               {/* 화면 영역 */}
               <div className="relative w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
-                {/* 앱 미리보기 콘텐츠 */}
-                <div className="w-full h-full bg-gradient-to-b from-orange-50 to-amber-50 p-6 flex flex-col items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="text-3xl">📸</div>
-                    <h3 className="text-lg font-bold text-primary">음식 사진 분석</h3>
-                    <p className="text-sm text-muted-foreground">부모님의 식사를<br />건강하게 관리해요</p>
-                    <div className="flex flex-col gap-2 mt-6">
-                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 text-xs">
-                        🍚 영양소 분석
-                      </div>
-                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 text-xs">
-                        ⚠️ 질병별 주의사항
-                      </div>
-                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 text-xs">
-                        💡 맞춤 식단 추천
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* 실제 작동하는 앱 화면 */}
+                <iframe 
+                  src="/analyze" 
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts allow-same-origin allow-forms"
+                  title="앱 미리보기"
+                />
               </div>
 
               {/* 홈 버튼 인디케이터 */}
