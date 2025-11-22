@@ -23,9 +23,7 @@ const Landing = () => {
           {/* 메인 카피 */}
           <div className="space-y-6 text-center lg:text-left">
             <h2 className="text-3xl lg:text-3xl font-bold text-foreground leading-tight">
-              부모님의 밥상을
-              <br />
-              건강하고 따뜻하게
+              부모님의 밥상을 건강하고 따뜻하게
             </h2>
             <p className="text-xl lg:text-xl text-muted-foreground leading-relaxed">
               AI 기반 음식 분석으로 부모님의 건강한 식습관을 돕습니다.
