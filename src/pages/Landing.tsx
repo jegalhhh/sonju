@@ -15,8 +15,8 @@ const Landing = () => {
           {/* 로고 + 제목 */}
           <div className="space-y-4">
             <div className="flex items-center gap-4 justify-center lg:justify-start">
-              <img src="/sonju.png" alt="밥상 손주 로고" className="w-16 h-16 object-contain" />
-              <h1 className="text-5xl lg:text-6xl font-jua text-primary tracking-tight">밥상 손주</h1>
+              <img src="/sonju.png" alt="밥상 손주 로고" className="w-24 h-24 object-contain" />
+              <h1 className="text-6xl lg:text-7xl font-jua text-primary tracking-tight">밥상 손주</h1>
             </div>
           </div>
 
