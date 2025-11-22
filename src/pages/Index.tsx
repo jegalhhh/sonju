@@ -124,9 +124,10 @@ const Index = () => {
             <div
               onClick={handleUploadAreaClick}
               className={`
-                relative w-full min-h-[480px] rounded-lg border-2 border-dashed
+                relative w-full rounded-lg border-2 border-dashed
                 flex items-center justify-center cursor-pointer
                 transition-all duration-300 overflow-hidden
+                ${previewUrl ? 'min-h-0' : 'min-h-[480px]'}
                 ${
                   previewUrl
                     ? "border-primary bg-card"
@@ -146,7 +147,7 @@ const Index = () => {
                 <img
                   src={previewUrl}
                   alt="업로드된 이미지 미리보기"
-                  className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                  className="w-full h-auto rounded-lg"
                 />
               ) : (
                 <div className="text-center p-8">
