@@ -82,9 +82,13 @@ const MyDiet = () => {
     return Math.round(bmr * 1.3);
   };
 
+  // Only records from today (local time) count toward daily totals
+  const todayStr = new Date().toDateString();
+  const todayLogs = foodLogs.filter(log => new Date(log.created_at).toDateString() === todayStr);
+
   // Calculate total consumed calories
   const calculateConsumedCalories = () => {
-    return foodLogs.reduce((total, log) => {
+    return todayLogs.reduce((total, log) => {
       if (!log.calories) return total;
       const match = log.calories.match(/(\d+)/);
       return total + (match ? parseInt(match[1]) : 0);
@@ -182,7 +186,7 @@ const MyDiet = () => {
   };
 
   const calculateHealthRisks = async () => {
-    if (!userInfo || foodLogs.length === 0) return;
+    if (!userInfo || todayLogs.length === 0) return;
 
     setPredictingHealth(true);
     try {
@@ -192,7 +196,7 @@ const MyDiet = () => {
         return match ? parseFloat(match[1]) : 0;
       };
 
-      const dailyNutrition = foodLogs.reduce((acc, log) => ({
+      const dailyNutrition = todayLogs.reduce((acc, log) => ({
         energy: acc.energy + parseNumber(log.calories),
         protein: acc.protein + parseNumber(log.protein),
         fat: acc.fat + parseNumber(log.fat),
