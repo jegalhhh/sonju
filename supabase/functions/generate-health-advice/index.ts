@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    const OPENAI_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!OPENAI_API_KEY) {
       throw new Error("OPENAI_API_KEY not configured");
     }
@@ -70,14 +70,14 @@ Deno.serve(async (req) => {
 - 의료 진단이 아니라 "생활습관/식습관 조언"이라는 뉘앙스를 유지해라.
 - 구체적인 음식 예시 없이 추상적인 조언만 하지 마라.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: "당신은 한국어로 답하는 전문 영양사이자 가정의학과 전문의입니다." },
           { role: "user", content: prompt }

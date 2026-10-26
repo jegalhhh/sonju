@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    const OPENAI_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!OPENAI_API_KEY) {
       console.error("OPENAI_API_KEY가 설정되지 않았습니다.");
       return new Response(JSON.stringify({ detail: "서버 설정 오류입니다." }), {
@@ -99,14 +99,14 @@ ${diseasePrompt}
 
     console.log("OpenAI Vision API 호출 시작...");
 
-    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    const openaiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
@@ -128,7 +128,7 @@ ${diseasePrompt}
             ],
           },
         ],
-        max_tokens: 500,
+        max_tokens: 1000,
       }),
     });
 
