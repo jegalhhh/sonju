@@ -128,7 +128,7 @@ ${diseasePrompt}
             ],
           },
         ],
-        max_tokens: 500,
+        max_tokens: 2000,
       }),
     });
 
